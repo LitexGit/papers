@@ -1,0 +1,350 @@
+\section{Impact of Ordering}
+\label{sec:new}
+
+Our analysis in Sections~\ref{sec:local} and \ref{sec:distributed} focuses on
+the sum or difference of a key as a whole over an entire epoch, and the
+complexity results only address the worst-case scenario.  However, the actual
+performance and accuracy of LD-Sketch is in fact sensitive to the ordering of
+data items {\em within} an epoch.  Specifically, during the update procedure,
+the values of the data items determine how much we decrement the keys of the
+associative arrays and how much we expand the associative arrays.  The actual
+number of counters allocated in LD-Sketch, and hence the detection accuracy,
+varies depending on the ordering of values seen by LD-Sketch.  
+
+The impact of ordering is not considered in prior work.
+Counter-based techniques always keep fixed-length arrays, so the memory usage
+is unaffected, although it remains an open issue how the ordering of data
+items affects decrements of counters and the resulting detection accuracy.
+Sketch-based techniques always add values to buckets, and the summation
+results are unaffected by the ordering of data items. 
+
+In this section, we demonstrate via examples the impact of the ordering of
+data items on LD-Sketch.  We then explain how we leverage the ordering
+property to enhance LD-Sketch. 
+
+\subsection{Motivating Examples}
+\label{sec:new_example}
+
+
+
+
+Our work addresses the impacts of arrival sequences
+though other factors may also affect LD-Sketch.
+The idea is based on the fact that 
+
+Now we illustrate the impacts of arrival sequences with an example bucket $(i,j)$ for heavy hitter detection.
+The detection threshold $\phi$ is sufficient large and we set the expansion parameter $T=\phi$.
+The total sum of all keys in the bucket is $V_{i, j} = 2.8\phi$.
+It has the following distribution.
+One true heavy hitter $x_1$ has $S(x_1) = 1.3\phi$.
+One large non-heavy hitter $x_2$ has $S(x_2)=0.9\phi$ and
+three small keys $y1, y2, y3$ have true sum $S(y_1)=0.1\phi, S(y_2)=0.2\phi$ and $S(y_3)=0.3\phi$, respectively. 
+%The total sum of the 100 small keys is $0.6\phi$. 
+We assume that each key has single data item with the value equal to the true sum.
+
+We analyze the upper bound of memory usage and number of false positives.
+It is easy to show that the maximum expansion number is $k=2$ and the corresponding $l_{i,j}$ is 11.
+The number of false positive is a little more complicated.
+A false positive key $x$ produced by the bucket must satisfy $S(x)<\phi$
+and $S^{up}_{i,j}(x) \ge \phi$.
+Replacing with the upper bound of $S^{up}_{i,j}(x)$ in Lemma~\ref{lemma:bucket_estimation_error},
+we obtain $\frac{k+1}{(k+1)(k+2)-1}\phi \le S(x) <\phi$.
+Note that the total sum of all keys is at most $(k+1)\phi$.
+In the worst case, $(k+1)(k+2)-1$ keys satisfy the condition $\frac{k+1}{(k+1)(k+2)-1}\phi \le S(x) <\phi$
+and then are reported, including the only true heavy hitter $x_1$.
+The value is 11 when $k=2$.
+
+\begin{figure}[!t]
+\centering
+\begin{tabular}{c}
+\includegraphics[width=3.2in]{figs/arrival_ascend.eps} \\
+{\small (a) Ascending order} \\
+\vspace{3pt}\\
+\includegraphics[width=3.2in]{figs/arrival_descend.eps} \\
+{\small (b) Descending order}
+\end{tabular}
+\caption{The impact of two particular examples.}
+\label{fig:seq_example}
+\end{figure}
+
+Now we consider two particular arrival sequences as Figure~\ref{fig:seq_example}.
+In the first arrival sequence, data items arrival in ascending order of true sum:
+the smaller the true sum of a key is, the earlier its data items arrive.
+Herein, the three small keys arrive first.
+When the associative array is full, the new coming key decrements and removes its previous one as $l_{i,j}=1$.
+In details, $y_2$ totally eliminates $y_1$ and then is inserted into $A_{i,j}$ with $A_{i,j}[y_2]=0.1\phi$.
+Similarly, ,$y_3$ removes $y_2$ and the associative array contains $y_3$ with $A_{i,j}[y_3]=0.2\phi$ after decrements.
+During the two decrements, $e_{i,j}$ increases to $0.2\phi$.
+When $x_2$ comes, we increment $V_{i,j}$ from $0.6\phi$ to $1.5\phi$.
+Then $A_{i,j}$ expands and $l_{i,j}=5$ since $k$ has increased to 1.
+When $x_1$ arrives, it is inserted directly since $A_{i,j}$ has sufficient empty counters.
+Note that $x_2$ is never decremented and then $S^{up}_{i,j}(x_2)=S(x_2)+e_{i,j}=1.1\phi$,
+implying that $x_2$ would be a false positive.
+In summary, this arrival sequence expands $l_{i,j}$ to 5,
+while produces one false positive key.
+
+The second arrival sequence orders data items in descending order of true sum:
+the larger the true sum of a key is, the earlier its data items arrive.
+At the beginning is $(x_1, 1.3\phi)$ and the associative array keeps it.
+Then $(x_2, 0.9\phi)$ follows and expands $A_{i,j}$.
+Since $V_{i,j}$ has increased to $2.2\phi$,
+we have $k=2$ and $l_{i,j}$ increases from 1 to 11.
+After the expansion, the three small non-heavy hitters $y_1, y_2$ and $y_3$ can be inserted directly.
+The example keeps $e_{i,j}$ zero so that there is no false positive.
+In summary, the descending sequence only reports the true heavy hitter,
+while $l_{i,j}$ increases to 11.
+
+\subsection{Mitigating Dynamic Expansion}
+\label{sec:new_modify}
+
+\begin{figure}[t]
+\hrulefill
+\begin{small}
+\begin{algorithmic}[1]
+\item[{\bf Initialization (before each epoch)}: $\hat{k_{i,j}}=0$]
+\State $\hat{k_{i,j}}=\hat{k}_{i,j}+1$
+\State add $(\hat{k_{i,j}}+1)(\hat{k_{i,j}}+2)-1 - l_{i,j}$ new counters to $A_{i,j}$
+\State $l_{i,j} = (\hat{k_{i,j}}+1)(\hat{k_{i,j}}+2)-1$
+\State Insert $x$ to $A_{i,j}$ and set $A_{i,j}[x] = v_x$
+\end{algorithmic}
+\end{small}
+\vspace{-0.5em}
+\hrulefill
+\caption{Controlled expansion: modifications to Lines~22-24 of
+Algorithm~\ref{alg:update}}
+\label{fig:modification}
+\end{figure}
+
+We learn that arrival sequences can optimize the memory usage or accuracy from the two examples.
+To achieve this, we can aggregate the data items and then compare the true sums.
+However, the aggregation will result in significantly large data items and increment $k$ dramatically between two expansions.
+The aggresive increasing $k$ forces $A_{i,j}$ to consume more counters than it actually uses,
+as $l_{i,j}$ increases with respect to the expansion number $k$.
+For example, $l_{i,j}$ jumps from 1 to 11 directly in the previous example of descending sequence.
+%For example, 
+%assume a bucket with two keys: the first has true sum $10\phi$ and
+%the second key is quite small.
+%If all data items of the first key arrival before that of the second key,
+%$l_{i,j}$ would be nearly 100 for the two keys as $k=10$,
+%which is a waste of memory.
+
+To handle this problem, we introduce a {\em control expansion counter} $\hat{k}_{i,j}$.
+We increment $\hat{k}_{i,j}$ by exactly one for each expansion and make $l_{i,j}$ increases with respect to $\hat{k}_{i,j}$ instead of $k$.
+Thus, we add much fewer counters to $A_{i,j}$ and mitigate the aggressive expansion incurred by the dramatically increasing $k$.
+
+%Before diving into the arrival sequences,
+%we slightly modify Algorithm~\ref{alg:update} in Section~\ref{sec:local} to mitigate the dramatic expansion of associated array.
+%The modification also enables to leverage the arrival sequences to enhance LD-Sketch,
+%as described in the following sections.
+
+Figure~\ref{fig:modification} details the modification.
+We replace the Lines 22-24 of Algorithm~\ref{alg:update} with Lines 1-4 in Figure~\ref{fig:modification}.
+The control expansion counter $\hat{k}_{i,j}$ is set to zero before each epoch.
+At each expansion, we increment $\hat{k}_{i,j}$ by one (Line 1) and add $(\hat{k}_{i,j}+1)(\hat{k}_{i,j}+2)-1-l_{i,j}$ new counters (Line 2).
+Then we update $l_{i,j}$ and insert the incoming key (Lines 3-4).
+The modification ensures that $\hat{k}_{i,j}\le k$. 
+In details, when $\hat{k}_{i,j}=k$, we must have $l_{i,j}=(\hat{k}_{i,j}+1)(\hat{k}_{i,j}+2)-1=(k+1)(k+2)-1$. By Line 9 of Algorithm~\ref{alg:update}, the algorithm enters the decrement process and $\hat{k}_{i,j}$ stops growing until $k$ is incremented again.
+
+Note that all analysis results in Section~\ref{sec:local_analysis} still hold because those results depend on the number of expansion $k$ and
+$k=\lfloor V_{i,j}/T\rfloor$ is only determined by $V_{i,j}$.
+
+\subsection{Analysis}
+\label{sec:new_analysis}
+
+We now formalize the impacts of arrival sequences with the modified algorithm in Section~\ref{sec:new_modify}.
+The analysis employs a bucket $(i, j)$ with $t_{i,j}$ distinct keys $x_1$, $x_2$, \dots $x_t$ hashed into it.
+Their total sum $V_{i,j}$ satisfies $k_{i,j}T \le V_{i, j} < (k_{i,j}+1)T$,
+where $T=\phi$ for heavy hitter detection and $T=\epsilon\phi$ for heavy changer detection.
+Among the $t_{i, j}$ keys, $t^{\ge}_{i, j}$ have true sum at least $T$.
+For the ease of presentation, we refer to them as {\em large keys} and the rest as {\em small keys}.
+The total sum of large and small keys are denoted by $V^{\ge}_{i, j}$ and $V^{<}_{i, j} = V_{i,j}-V^{\ge}_{i, j}$,
+satisfying $k^{\ge}_{i,j}T \le V^{\ge}_{i,j} < (k^{\ge}_{i,j}+1)T$ and $k^{<}_{i,j}T \le V^{<}_{i,j} < (k^{<}_{i,j}+1)T$, respectively.
+
+Our results consist of two parts: how the arrival sequence of ascending order affects 
+memory usage and that of descending order affects accuracy.
+By arrival sequence of ascending order, we mean that data items of $x_a$ always
+come prior to data items of $x_b$ if $S(x_a) < S(x_b)$. 
+Similarly, arrival sequence of descending order means that data items of key 
+$x_a$ are always after data items of key $x_b$ if $S(x_a) < S(x_b)$.
+
+The following two lemmas describe the impacts of the two arrival sequences on $l_{i,j}$ and $e_{i,j}$.
+\begin{lemma}
+\label{lemma:seq_ascend}
+If data items arrive in ascending order, $l_{i,j}=O({k^{<}_{i,j}}^2+t^{\ge}_{i,j})$.
+\end{lemma}
+\begin{proof}
+We partition the update procedure into two phases.
+The first phase only includes all small keys,
+expanding $A_{i,j}$ at most $k^{<}_{i,j}$ times.
+After this phase, the control expansion counter $\hat{k}_{i,j}\le k^{<}_{i,j}$ and $l_{i,j}\le(k^{<}_{i,j}+1)(k^{<}_{i,j}+2)-1$.
+
+In the second phase, the remaining $t^{\ge}_{i,j}$ large keys come.
+By Lemma~\ref{lemma:fn}, all large keys must be kept,
+requiring $A_{i,j}$ to track the $t^{\ge}_{i,j}$ large keys as well 
+as at most $(k^{<}_{i,j}+1)(k^{<}_{i,j}+2)-1$ small keys in the worst case.
+To accommodate all these keys, $\hat{k}_{i,j}$ is incremented again to make sure that
+$l_{i,j}=O(\hat{k}_{i,j}^2)=O({k^{<}_{i,j}}^2+t_h)$.
+%$(\hat{k}_{i,j}+0)(\hat{k}_{i,j}+2)-1\le
+%(k^{<}_{i,j}+1)(k^{<}_{i,j}+2)-1 + t^{\ge}_{i,j} <(\hat{k}_{i,j}+2)(\hat{k}_{i,j}+3)-1$.
+%Since both $(\hat{k}_{i,j}+1)(\hat{k}_{i,j}+2)-1$ and $(\hat{k}_{i,j}+2)(\hat{k}_{i,j}+3)-1$ are $\Theta(\hat{k}_{i,j}^2)$,
+%$l_{i,j}=O(\hat{k}_{i,j}^2)=O({k^{<}_{i,j}}^2+t_h)$.
+The results follow.
+\end{proof}
+
+\begin{lemma}
+\label{lemma:seq_descend}
+If data items arrive in descending order, $e_{i,j}$ is $O(\frac{T}{k^{\ge}_{i,j}})$.
+\end{lemma}
+\begin{proof}
+Similar to proof of Lemma~\ref{lemma:seq_ascend}, we also partition the update procedure into two phases.
+The first phase only includes all large keys.
+When encountering a new key and $A_{i,j}$ is full,
+$A_{i,j}$ must expand.
+Therefore, this phase keeps $e_{i,j}=0$ and the control expansion counter $\hat{k}_{i,j}\le k^{\ge}_{i,j}$.
+%Besides, this phase increments $\hat{k}_{i,j}$ to
+%the smallest integer such that $l_{i,j}=(\hat{k}_{i,j}+1)(\hat{k}_{i,j}+2)-1 \ge t^{\ge}_{i,j}$.
+%For the ease of presentation, we denote this $\hat{k}_{i,j}$ by $c$ and we have
+%$c=\hat{k}_{i,j}=O(\sqrt{t^{\ge}_{i,j}})$.
+
+The second phase includes all the small keys.
+In this phase, $A_{i,j}$ continues to expand as long as $\hat{k}_{i,j}<k^{\ge}_{i,j}$.
+When keys are decremented, we must have $\hat{k}_{i,j} \ge k^{\ge}_{i,j}$.
+This means that $e_{i,j}$ starts to increase from at least round $k^{\ge}_{i,j}$.
+In round $\kappa (k^{\ge}_{i,j}\le\kappa\le k)$, $e_{i,j}$ is incremented by at most $\frac{T}{(\kappa+1)(\kappa+2)}$.
+So $e_{i,j}$ is at most $\sum_{\kappa=k^{\ge}_{i,j}}^{k_{i,j}}\frac{T}{(\kappa+1)(\kappa+2)}=\frac{T}{k^{\ge}_{i,j}+1}-\frac{T}{k_{i,j}+2}=O(\frac{T}{k^{\ge}_{i,j}})$.
+The results follow.
+\end{proof}
+
+{\bf Discussion.}
+Based on Section~\ref{subsec:struct}, $l_{i,j} = O(k_{i,j}^2)$, which is reached by $k_{i,j}$ rounds of expansion.
+The value may be large in the worst case, particularly when a bucket includes a terribly huge key.
+However, Lemma~\ref{lemma:seq_ascend} shows that the length of ascending sequence
+only depends on the total sum of small keys and the number of large keys.
+In the context of network traffic, the key distribution is typically highly skewed.
+A few number of large keys would account for most of the true sum or true change,
+suggesting small $k^{<}_{i,j}$ and $t^{\ge}_{i,j}$ in practice.
+Therefore, the memory usage may become much lower when the data items arrive in ascending order.
+
+For the accuracy, Lemma~\ref{lemma:seq_descend} considers the maximum estimation error $e_{i, j}$.
+The rational behind this is that the number of false positives is determined by estimation error $e_{i,j}$ in each bucket $(i,j)$.
+Specifically, the estimation error of a key is at most $e_{i, j}$ for heavy hitter detection and $2e_{i, j}$ for heavy changer detection by Lemma~\ref{lemma:bound} and~\ref{lemma:bucket_estimation_error}.
+The descending sequence optimizes the upper bound of $e_{i,j}$ from $O(T)$ to $O(\frac{T}{k^{\ge}_{i,j}})$.
+Since the network traffic is highly skewed, a few large keys would produce large value for $k^{\ge}_{i,j}$,
+which significantly optimizes the accuracy.
+
+\subsection{Enhancement for LD-Sketch}
+\label{sec:new_algorithms}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.4\textwidth]{figs/heuristic.eps}
+\caption{Framework for Enhancing Heuristics.}
+\label{fig:heuristic}
+\vspace{-1em}
+\end{figure}
+
+It is not trivial to leverage the analysis results to enhance LD-Sketch.
+The difficult comes from the fact that it remains an open problem to sort data items to ascending or 
+descending order without tracking all keys.
+On the other hand, if there existed such a solution, the heavy hitter and changer detection
+would be solved elegantly by simply sorting keys in descending order and reporting the first few keys.
+
+Thus, we turn to propose heuristics to reorder the data items.
+We term the heuristic leveraging the ascending (resp. descending) order to optimize memory consumption (resp. false positive rate)
+as {\em memory-oriented} (resp. {\em accuracy-oriented}) heuristic.
+The heuristics should perform space and time efficient operations on data items
+because we hope to bound the incurred overheads.
+Taking the constraints into account, we propose two enhancement heuristics sorting data items
+at coarse granularity instead of producing the exact ascending or descending sequences.
+
+The two heuristics employ the same framework, as shown in Figure~\ref{fig:heuristic}.
+The framework is composed of a priority queue and a hash table of same capacity.
+The capacity of the priority queue and hash table is a constant number.
+The hash table is indexed by keys of data items, and its value is a pointer to a 
+counter in the priority queue.
+The priority is defined by the counter value or the opposite number of the counter value
+so that the largest or smallest counter can be return in $\Theta(1)$.
+If multiple counters have same value, the one with older access time will have higher priority.
+
+Algorithm~\ref{alg:heuristic} elaborates this framework.
+There are two basic operations: UpdateFramework and EvictElement.
+{\em UpdateFramework} is used to include a data item $(x, v_x)$ into the framework.
+For key $x$ in the hash table, we dereference the pointer and increment the counter in the priority queue (Lines 2-4).
+Otherwise, if the hash table and priority queue are full, the framework has to evict one element
+to make room for the new key (Lines 6-8).
+Then we insert key $x$ into hash table and the corresponding counter in the priority queue is set to $v_x$ (Line 9).
+In {\em EvictElement}, we first select the counter with highest priority (Line 14).
+Next, we emit it to the detection module in the workers (Line 15).
+Finally, the corresponding records of the key are removed from the priority queue and hash table.
+
+Given these two operations, the workflow works as follows in an epoch. 
+Initially, the hash table and priority queue are cleared (Lines 20-21).
+Then we update the framework with each data item $(x, v_x)$ in the stream (Lines 22-24).
+At the end of an epoch, all remaining elements are evicted (Lines 25-27).
+
+The two heuristics only differ in the definitions of priority.
+For memory-oriented heuristic, smaller counter has higher priority
+so that the smallest key is selected in the eviction.
+The accuracy-oriented heuristic is the opposite:
+larger counter have higher priority.
+
+{\bf Practical issues.} In the remaining of this section, we discuss some practical issues for the enhancement heuristics.
+The first is the place to deploy the heuristics.
+We deploy the heuristics in each of the remote sites instead of workers.
+This placement shifts partial workloads from workers to remote sites to achieve high throughput.
+Besides, it also reduces the data transmissions between remote sites and workers,
+as data items are aggregated.
+
+The second issue is the capacity of the hash table and priority queue.
+A too-small capacity evicts keys frequently, preventing the counters from increasing to large value before they are evicted.
+In this case, the heuristics fail to distinguish the small and large keys efficiently and have little improvement.
+But large capacity requires more memory and processing time in maintaining the priority queue.
+In this paper, we select the capacity as $0.1\%$ of the number of available keys in an epoch.
+This value can be regarded as a constant number and significantly improve the detection algorithm as shown in our evaluation (see Section~\ref{sec:eval}).
+
+The final issue comes from the problem of unbalance partitioning for a key,
+which introduces false negatives in the distributed detection.
+Consider the extreme case in which a true heavy hitter is never evicted until the end of the epoch,
+with its counter in the framework equal to its true sum.
+When the remote site tries to emit the key to one of $d$ workers, the selected worker will receive all the true sum while the other $d-1$ workers receive zero.
+This unbalance partitioning makes LD-Sketch fail to detect the key since it requires all $d$ workers to report the key.
+To handle this problem, we explicitly split a data item in to $d$ equal pieces and emit exact one piece to each worker.
+
+\begin{algorithm}[t]
+\caption{Enhancement Heuristics for LD-Sketch}
+\label{alg:heuristic}
+\begin{small}
+\begin{algorithmic}[1]
+\item[{\bf Input}: data item $(x, v_x)$]
+
+\Function {UpdateFramework}{$x,v_x, ht, pq$}
+\If {$x \in ht$}
+  \State Lookup $ht$ for pointer to the corresponding element in $pq$
+  \State Update the element in $pq$
+\Else
+  \If {$pq$ is full}
+    \State {\sc EvictElement($ht, pq$)}
+  \EndIf
+  \State insert $x$ to $ht$ and its counter in $pq$ is set to $v_x$
+\EndIf
+\EndFunction
+\State
+\Function {EvictElement}{$ht, pq$}
+  \State Retrieve the highest-priority element $e$ from $pq$
+  \State Emit out $(e.key, e.counter)$
+  \State Remove records of the element from $pq$ and $ht$
+\EndFunction
+\State
+\Procedure {Workflow}{}
+  \State {hash table $ht \leftarrow \emptyset$}
+  \State {priority queue $pq \leftarrow \emptyset$}
+  \For {data item $(x,v_x)$}
+    \State {\sc UpdateFramework($x,v_x, ht, pq$)}
+  \EndFor
+  \While {$pq$ is not empty}
+    \State {\sc EvictElement($ht, pq$)}
+  \EndWhile
+\EndProcedure
+\end{algorithmic}
+\end{small}
+\end{algorithm}

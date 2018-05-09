@@ -1,0 +1,23 @@
+\begin{thebibliography}{1}
+
+\bibitem{Khalil2017}
+R.~Khalil and A.~Gervais.
+\newblock {REVIVE: Rebalancing O -Blockchain Payment Networks}.
+\newblock In {\em Proc. of CCS}, 2017.
+
+\bibitem{DBLP:journals/corr/LindEPS16}
+J.~Lind, I.~Eyal, P.~R. Pietzuch, and E.~G. Sirer.
+\newblock Teechan: Payment channels using trusted execution environments.
+\newblock {\em CoRR}, abs/1612.07766, 2016.
+
+\bibitem{nakamoto2008bitcoin}
+S.~Nakamoto.
+\newblock Bitcoin: A peer-to-peer electronic cash system.
+\newblock 2008.
+
+\bibitem{poon2015bitcoin}
+J.~Poon and T.~Dryja.
+\newblock The bitcoin lightning network.
+\newblock {\em cit. on}, 2015.
+
+\end{thebibliography}

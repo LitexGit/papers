@@ -1,0 +1,142 @@
+\section{Overview}
+\label{sec:overview}
+
+\begin{table*}[!t]
+  \centering
+  \caption{Comparison of Existing Works with LD-Sketch.
+  \label{tab:compare}
+  \renewcommand{\arraystretch}{1.1}
+  \begin{tabular}{|c|c|c|c|c|c|c|c|}
+    \hline
+    \multirow{3}{*}{Method} &
+    \multicolumn{4}{c|}{Error Probability} & \multirow{3}{*}{Space} & \multirow{3}{*}{Update Time} & \multirow{3}{*}{Detect Time} \\
+    & \multicolumn{4}{c|}{Heavy Hitter $|$ Changer} & & & \\
+    \cline{2-5}
+    & $R_1$ & $R_2$ & $R_3$ & $R_4$ & & & \\
+    \hline
+    Count-based \cite{Misra1982, Manku2002, Metwally2005} & $0|*$ & $*|*$ & $0|*$ & $0|*$ & $O(\frac{H}{\epsilon})$ & $O(1)$ & $O(\frac{H}{\epsilon})$ \\
+    \hline
+    Count-Min \cite{Cormode2005a} & $\delta|\delta$ & $*|*$ & $0|*$ & $0|\delta$ &
+        $O(\frac{H}{\epsilon}\log{\frac{1}{\delta}})$ &
+        $O(\log{\frac{1}{\delta}})$ &
+        $O(n)$ \\
+    \hline
+    Count-Sketch \cite{Charikar2004} & $\delta|\delta$ & $*|*$ & $*|*$ & $\delta|\delta$ &
+        $O(\frac{H_2}{\epsilon^2}\log{\frac{1}{\delta}})$ &
+        $O(\log{\frac{1}{\delta}})$ &
+        $O(n)$\\
+    \hline
+    Group Testing \cite{Cormode2004} & $\delta|\delta$ & $*|*$ & $*|*$ & $\delta|\delta$ &
+        $O(\frac{H}{\epsilon}\log{n}\log{\frac{1}{\delta}})$ &
+        $O(\log{n}\log{\frac{1}{\delta}})$ &
+        $O(\frac{H}{\epsilon}\log{n}\log{\frac{1}{\delta}})$ \\
+    \hline
+    Reversible Sketch \cite{Schweller2007} & $\delta|\delta$ & $*|*$ & $*|*$ & $\delta|\delta$ &
+        $O(\frac{\log n^{\Theta(1)}}{\log\log n})$ &
+        $O(\log n)$ &
+        $O(\frac{H}{\epsilon}n^{\frac{3}{\log\log n}}\log\log n)$\\
+    \hline
+    Sequential Hash \cite{Bu2010} & $\delta|\delta$ & $*|*$ & $0|*$ & $0|\delta$ &
+        $O(\frac{H}{\epsilon}\log{n}\log{\frac{1}{\delta}})$ &
+        $O(\log{n}\log{\frac{1}{\delta}})$ &
+        $O(\frac{H}{\epsilon}\log{n}\log{\frac{1}{\delta}})$\\
+    \hline
+    Fast Sketch \cite{Liu2012} & $\delta|\delta$ & $*|*$ & $*|*$ & $\delta|\delta$ &
+        $O(\frac{H}{\epsilon}\log{\frac{1}{\delta}}\log\frac{n\epsilon}{H\log{\frac{1}{\delta}}})$ &
+        $O(\log{\frac{1}{\delta}}\log\frac{n\epsilon}{H\log{\frac{1}{\delta}}})$ &
+        $O(\frac{H}{\epsilon}\log^3{\frac{1}{\delta}}\log\frac{n\epsilon}{H\log{\frac{1}{\delta}}})$\\
+    \hline
+    \hline
+    LD-Sketch & $\delta|\delta$ & $\delta|*$ & $0|0$ & $0|0$ &
+        $O(H\log{\frac{1}{\delta}}) | O(\frac{H}{\epsilon}\log{\frac{1}{\delta}})$ &
+        $O(\log{\frac{1}{\delta}}) | O(\log{\frac{1}{\delta}})$ &
+        $O(H\log{\frac{1}{\delta}}) | O(\frac{H}{\epsilon}\log{\frac{1}{\delta}})$
+    \\
+    \hline
+  \end{tabular}
+\end{table*}
+
+%$H = \frac{|\bm{V}|_1}{\phi}$ for heavy hitter,
+%and $H_2 = \frac{|\bm{D}|_1}{\phi}$ for heavy changer.
+%Further, we let $H_2$ be $\frac{|\bm{V}|_2}{\phi^2}$ for heavy hitter, and $\frac{|\bm{D}|_2}{\phi^2}$ for heavy changer.
+%
+%We propose LD-Sketch, a distributed algorithm to detect heavy hitters and heavy changers over the global stream
+%using the resources in the $p$ remote sites and $q$ workers.
+%We summary the goals of LD-Sketch here.
+%\begin{itemize}
+%  \item Eliminating false negatives.
+%  \item Bounding false positive rate.
+%  \item Consuming sub-linear memory.
+%  \item Fast updating in the update procedure.
+%  \item Efficiently reporting heavy keys in the detection procedure.
+%  \item Optimizing the communications without any communication errors.
+%\end{itemize}
+%
+%It is not trivial to achieve all the goals.
+%Thus, LD-Sketch considers the detection problem from two perspectives.
+%One is the {\em distributed scheme},
+%and the other is to perform detection with a component named {\em detection module}.
+%
+%
+%We give a brief introduction to how LD-Sketch achieves the goals here.
+%The detailed design will be elaborated in Section \ref{sec:local} and Section \ref{sec:distribute}, respectively.
+%
+%We deploy partition module requiring $O(1)$ operations per data item and constant memory.
+%Thus, the resource consumption in remote sites is bounded.
+%For the workers, their resource consumption is usually determined by the complexity of the detection module and the volume of the stream.
+%%Our partition module reduces the.
+%
+%Error = dist error + local error.
+%
+%The detection module is essentially a detection algorithm over a single stream in a local worker.
+%There have been many algorithms proposed for this scenario.
+%Since detecting heavy keys deterministically requires to $O(n)$ space \cite{Cormode2010},
+%which is computational infeasible, two parameters are introduced in practise.
+%The approximation parameter $0 < \epsilon \le 1$ relaxes
+%the threshold $\phi$ defined in Section \ref{sec:problem},
+%while error parameter $\delta$ is the upper bound of failure probability.
+%Typically, keys with value (resp. difference) exceeding $(1+\epsilon)\phi$ are detected with heavy hitters (resp. heavy changers)
+%with probability at least $1-\delta$,
+%while keys with value (resp. difference) less than $(1-\epsilon)\phi$ are detected with heavy hitters (resp. heavy changers)
+%with probability at most $\delta$.
+%We compare the detection module of LD-Sketch with those works in Table \ref{tab:compare}.
+%Compare.
+%
+%We assume there exits a local detection algorithm available.
+%which may be the local detection in Section  or any other existing detection algorithms.
+%The main challenge is to design a scheme that detects heavy hitters and heavy changers
+%with the local detection algorithm as building block.
+%
+%Instead of previous works such as \cite{Manjhi2005, Cormode2005b, Yi2009}
+%which focus on bound the communication complexity,
+%we are interested in further improving the accuracy as well as mitigating the resource consumption in the remote sites and workers.
+
+%Even though D-Choices can employ arbitrary detection algorithms in the workers,
+%the nice properties of LD-Sketch makes it more suitable for D-Choices than others.
+%A local detection algorithm is usually evaluated with four metrics:
+%In our distributed architecture with D-Choices approach, we consider error rate more significantly
+%because the requirement on space and time can be solved intuitively by allocating workloads to multiple workers.
+%
+%As described in Section \ref{sec:distribute} , D-Choices approach has to allow misses in some of the $d$ workers to reduce false negative rate.
+%The allowed misses increases the false positive rate under fixed memory size.
+%Thus, D-Choices approach can further reduce false positive rate by setting the allowed miss number $r$ to zero as long as
+%its employed detection algorithm misses no heavy keys.
+%Unfortunately, existing works fail to provide such property.
+%A comparison of existing works is presented in Table \ref{tab:compare}.
+%Despite some of them miss no heavy hitters, no algorithms promise to produce all heavy changers.
+%In those works, they typically employ two user-defined parameters: approximation parameter $\epsilon$ and failure rate $\delta$ as well as the threshold $\phi$.
+%With selecting parameters based on $\phi, \epsilon$ and $\delta$,
+%keys larger than $\phi+\epsilon$ with be reported with probability at least $1-\delta$, while
+%keys smaller than $\phi-\epsilon$ are reported with probability at most $\delta$.
+%Keys between the two values may or may not be output.
+%
+%%Thus, we turn to relax the definition from two perspectives.
+%%One is to employ a parameter $0<\epsilon\le\phi$ and relax the threshold of no reporting non-heavy keys from $\phi$ to $\phi-\epsilon$.
+%%The other is to employ a parameter $\delta$ and allow reporting non-heavy keys with a probability at most $\delta$.
+%
+%In contrast, the most distinct property of LD-Sketch is that all heavy keys will be reported (i.e. no false negatives).
+%Meanwhile, the false positive rate is still bounded.
+%Furthermore, the time complexity for updating is comparable to the Sketch-Min algorithm.
+%The only drawback is that the theoretical time complexity for detection and space complexity in the worst-case has worse bound than existing works.
+%But our evaluation shows that the performance of LD-Sketch is much better in practise.
+

@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d (TeX Live 2018)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: paper.aux
+The style file: abbrv.bst
+Database file #1: paper.bib
+Warning--empty journal in nakamoto2008bitcoin
+You've used 4 entries,
+            2118 wiz_defined-function locations,
+            518 strings with 4205 characters,
+and the built_in function-call counts, 1043 in all, are:
+= -- 93
+> -- 56
+< -- 0
++ -- 23
+- -- 18
+* -- 57
+:= -- 195
+add.period$ -- 12
+call.type$ -- 4
+change.case$ -- 21
+chr.to.int$ -- 0
+cite$ -- 5
+duplicate$ -- 44
+empty$ -- 80
+format.name$ -- 18
+if$ -- 207
+int.to.chr$ -- 0
+int.to.str$ -- 4
+missing$ -- 4
+newline$ -- 23
+num.names$ -- 8
+pop$ -- 25
+preamble$ -- 1
+purify$ -- 17
+quote$ -- 0
+skip$ -- 31
+stack$ -- 0
+substring$ -- 21
+swap$ -- 4
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 16
+warning$ -- 1
+while$ -- 8
+width$ -- 5
+write$ -- 42
+(There was 1 warning)

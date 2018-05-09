@@ -1,0 +1,149 @@
+\section{Related Work}
+\label{sec:related}
+
+%We review related work in heavy hitter/changer detection.
+
+{\bf Counter-based techniques.}
+The Misra-Gries algorithm \cite{Misra1982} maintains an associative array of
+counters and keeps tracks of frequent items (see
+Section~\ref{subsec:background}).
+%and guarantees that all heavy hitters are kept in the array.
+%algorithm \cite{Moore81} to find out all items with frequency larger than
+%some threshold.  It updates the counters for each arriving data item by a set
+%of rules, and guarantees that all heavy hitters are kept in the counters.
+%$n/k$, where $k$ is an integer and $n$ is the total count.
+%The algorithm maintains $k-1$ counters initialized with 0.
+%The algorithm guarantees that all keys exceeding $n/k$ are kept in the
+%counters.  Furthermore, the counters estimate the frequencies with error at
+%most $n/k$.
+%This approach can be extended for deterministically identifying heavy hitters.
+%Bose et al. \cite{Bose2003} select $1/\epsilon$ as $k$ for the MisraGries algorithm, resulting in the estimation error at most $\epsilon n$.
+Lossy Counting \cite{Manku2002} extends the Misra-Gries algorithm by tracking
+the estimation error for each key.  Space-Saving \cite{Metwally2005} improves
+the time and space efficiency with some specialized data structure.
+%``Stream-Summary''.  
+Probabilistic Lossy Counting \cite{Dimitropoulos2008}
+provides probabilistic guarantees on accuracy and consumes less memory by
+allowing errors in Lossy Counting.  The above algorithms only work for heavy
+hitter detection, but do not address heavy changer detection.  
+%In addition, they assume the arriving data items with equal weights, while
+%our work considers weighted inputs.
+
+{\bf Sketch-based techniques.} 
+%A sketch randomly projects a large set into a significantly small summary and
+%operates on the projected summary.
+Count-Sketch \cite{Charikar2004,Cormode2012} and Count-Min \cite{Cormode2005a}
+are two well-known sketch algorithms for frequency estimation.
+%The original version of Count-Min only applies to heavy hitter detection, and
+%a modification \cite{Cormode2012} makes it feasible for heavy changer
+%detection by selecting the median instead of the minimum value of sketch rows
+%as estimation.  
+The two algorithms differ in space requirement and error bounds.
+%Count-Sketch bounds the error with the $L_2$ norm instead of the $L_1$ norm of
+%Count-Min, while increasing the space requirement by a factor of $1/\epsilon$.
+A comprehensive study \cite{Cormode2010} shows that both algorithms have
+similar performance in practice.  Sketches have been used in heavy hitter
+detection (e.g., \cite{Estan2003}) and heavy changer detection (e.g.,
+\cite{Krishnamurthy2003}).  
+%However, the main drawback of sketches is that
+%they cannot directly restore which heavy keys are kept.  One must enumerate
+%all possible keys and query the estimated volume, and it is computationally
+%infeasible due to the huge key space.
+
+Some studies propose to efficiently restore heavy keys.
+%The key idea is to maintain extra data structures when updating the sketches,
+%on which the recovery process is based.
+%Some studies are based on pruning the search space.  
+Cormode et al.  \cite{Cormode2003} consider a hierarchical structure of keys
+and formalize the problem of finding hierarchical heavy hitters.
+%They search the hierarchical key space by a top-down approach.
+%Such approaches produce accurate results in heavy hitter detection, but for
+%heavy changers, the positive and negative changes in the same subspace may
+%cancel each other and result in false negatives.
+%Furthermore, searching (even the subset of) key space still consumes a lot of
+%computational resources.
+%Other studies aim to decode keys directly instead of searching the key space.
+Deltoids \cite{Cormode2004} exploits group testing to construct heavy keys
+from the extra information of buckets.  Reversible Sketch \cite{Schweller2007}
+generalizes this approach by searching smaller divided keys and constructing
+heavy keys from the searched results.  SeqHash \cite{Bu2010} constructs a
+sequence of subspaces and searches each subspace based on the results of prior
+ones.  Fast Sketch \cite{Liu2012} optimizes the space and time complexity of
+group testing by a quotient technique.
+%The drawback of the above construction-based approaches is that the heavy key
+%cannot be always recovered even though we know there exists heavy keys there.
+Group testing assumes that there is exactly one heavy key in a bucket.
+%If there are multiple heavy keys, none of them will be recovered.
+It leads to a high false negative rate when multiple heavy keys are hashed to
+the same bucket due to constrained memory, as shown in our evaluation.  In
+contrast, LD-Sketch queries
+%the estimation volume for top
+the heavy key candidates in the buckets and guarantees no false negatives.
+%Moreover, it achieves high detection performance by searching only a small
+%number of heavy key candidates. 
+
+%{\bf Denoising techniques.}  Many studies focus on reducing noises due to
+%collision of keys.  The multi-stage filter \cite{Estan2003} regards sketches
+%as parallel filters to reduce false positives.  It proposes a conservative
+%update technique to mitigate noises.  The spectral bloom filter
+%\cite{Cohen2003} employs a similar conservative update technique, and uses a
+%secondary sketch to filter out false positives.  Chen et al.  \cite{Chen2010}
+%consider long duration flows in network traffic as heavy hitters, and use two
+%sketches for adjacent time intervals to filter noises in each time interval.
+%%The sketch corresponding to current time interval is conservatively updated
+%%based on the other one corresponding to the last time interval.
+%The above studies maintain exactly one counter in each bucket and aim to
+%improve the accuracy of the counter.  Our work differs from them by employing
+%a dynamic dictionary that stores the top-ranked keys for each bucket.
+
+{\bf Distributed detection.}
+%The linear property of sketch makes it work well in distributed environment.
+%The typically setting is to
+Cormode et al. \cite{Cormode2005b} exploit the linear property of sketches
+for distributed detection, 
+%.  Each remote site maintains a sketch, while a centralized worker merges the
+%sketches and performs detection.  They also
+and reduce I/O using a prediction model. 
+%both remote sites and the centralized node.  The centralized node perform
+%detection based on the predicted sketches, while the remote sites maintain
+%the truly sketch as well as the predicted sketch.  A remote site sends its
+%sketch to the centralized node only when the difference between its predicted
+%sketch and truly sketch is larger than a threshold.
+%One drawback of the approach is that the remote sites must maintain a sketch
+%of the same size as that in the centralized worker, and the sketch size can be
+%huge.
+%Moreover, the CPU-intensive detection may become a bottleneck in the
+%centralized node.
+Manjhi et al. \cite{Manjhi2005}
+%take the load of workers into account.  They
+organize all workers into a tree structure, in which each level has its own
+error parameter to control the detection accuracy.
+%with the remote sites as leaves and the centralized node as root.
+%Each level in the tree has its own error parameter.
+%Nodes detect heavy hitters locally with the error parameter in their level
+%and send the detected results to their parent nodes.
+%By changing the error parameters, this work achieves different goals, such as
+%the communication cost in the link or the maximum load in the root node.
+%The tree design, however, may fail to work when the key distribution is
+%unbalanced among workers.
+%imbalanced among the remote sites.
+Yi et al. \cite{Yi2009} address the worst-case communication complexity in
+distributed streaming.
+%allow workers to send feedback messages to remote workers.
+%They propose an algorithm reaching the lower bound of communication costs in
+%this scenario.
+%The above studies trade between accuracy and communication efficiency.
+However, the above studies only address heavy hitter detection, while the
+distributed detection of LD-Sketch addresses heavy changer detection as well. 
+%Thus, each communication channel may introduce an additional error, which may
+%prevent the distributed architecture from scaling to large.  As a comparison,
+%our work optimizes I/O communication without introducing any %communication
+%errors. Recently, Yu et al. \cite{Yu2013} deploy heavy key detection
+%algorithms in software-defined networks \cite{Yu2013}.
+%programmable networking devices \cite{Jose2011} and perform 
+%These approaches highly depend on the underlying frameworks in deployment. 
+%and generalizing them for different frameworks remains an open issue.
+%TCAM \cite{Jose2011} is a framework for distributed flow counting.
+%They customize the hierarchical heavy hitter detection algorithm \cite{Cormode2003} atop the framework.
+%OpenSketch \cite{Yu2013} deploys sketches in routers and builds heavy hitter detection with the sketches.
+%It remains an open issue whether they can be generalized in the scenarios without such frameworks.

@@ -1,0 +1,100 @@
+\section{Implementation}
+\label{sec:impl}
+
+We have implemented a prototype of LD-Sketch.
+In our implementation, each remote site and worker is a process
+and they are connected with TCP connections or in-memory ring buffers.
+In this section, we will discuss some implementation issues.
+
+\subsection{Optimize I/O Communications}
+
+\begin{algorithm}[t]
+\caption{I/O Efficient Communication Mechanism}
+\label{alg:io}
+\begin{small}
+\begin{algorithmic}[1]
+\item[{\bf Input}: data item $(x, v_x)$]
+\Function {Emit}{$x,v_x$}
+%  \State $StepSet = \{i: gcd(q, i) = 1\}$
+%  \State $base = HashFunc1(x) \% q$
+%  \State $step = HashFunc2(x) \% StepSet.size$
+%  \State $index = HashFun3(x, x.timestamp) \% d$
+%  \State $target = (base + step * index) \% q$
+  \State $t' = $ current time
+  \State randomly select $d$ workers based on $x$
+  \State randomly select a target among the $d$ based on $x$ and $t'$
+  \State send $(x, v_x)$ to the target worker
+\EndFunction
+\State
+\Procedure {EfficientEmit}{}
+  \State $C \Leftarrow \emptyset$
+  \For {data item $(x,v_x)$}
+    \If{$x \in C$}
+      \State $C[x] = C[x] + v_x$
+    \Else
+      \State generate a random value $0<p_{r}\le 1$
+      \If{$p_{r}<\hat{p}$ and $C$ is not full}
+        \State $C[x] = v_x$
+      \Else
+        \State {\sc Emit}($x, v_x$)
+      \EndIf
+    \EndIf
+  \EndFor
+  \For {$x \in C$}
+    \State {\sc Emit}($x, C[x]$)
+  \EndFor
+\EndProcedure
+\end{algorithmic}
+\end{small}
+\end{algorithm}
+
+We propose a mechanism to efficient I/O communication.
+We use number of I/O emitted events as the metric.
+In Section \ref{sec:distributed}, the remote sites emit collected data items to workers directly.
+The number of I/O communication is the same as the number of data items.
+
+The efficient communication of LD-Sketch employs a small size cache $C$ in each remote site.
+With the cache, data items of some keys can be aggregated and sent in a batched emitted event.
+The challenge is how to select keys.
+Intuitively, it brings more benefits to store a key with a large amount of data items than a key with less data items.
+LD-Sketch caches each data item with a probability $\hat{p}$, which is selected as a small value.
+Thus, the more data items a key has, the higher probability it would be cached.
+
+Algorithm~\ref{alg:io} outlines the efficient communication mechanism of LD-Sketch.
+The function {\sc Emit} (Lines 1-6) is the d-choices approach in Section \ref{sec:distributed},
+and we use it as a building block for the efficient communication mechanism.
+Initially, the cache is empty (Line 9).
+On the arrival of a data item, if its key is already cached, LD-Sketch updates the aggregated sum in the cache (Lines 11-12).
+Otherwise, LD-Sketch caches is with probability $\hat{p}$ (Lines 14-16).
+If the data item is not cached, it will be sent to one of target workers with the d-choices approach (Line 18).
+At the end of the time epoch, all the aggregated data items in the cache will be sent (Lines 22-24).
+
+We first analysis the number of communications with the mechanism.
+For a key with $\alpha$ data items, it will be cached at its $i$-th data item with probability $\hat{p}(1-\hat{p})^{i-1}$.
+The expected number of I/O communication is reduced to
+$(1-\hat{p})^{\alpha}*\alpha + \sum_{i=1}^{\alpha}i(1-\hat{p})^{i-1}\hat{p} = \frac{1-(1-\hat{p})^{\alpha}}{\hat{p}}$.
+%\begin{lemma}
+%  Given $\hat{p}>0$, for each $x$ with $U_t^i(x)$ updates at input stream $i$, the expected number I/O communication is $\frac{1-(1-\hat{p})^{U_t^i(x)}}{\hat{p}} < \frac{1}{\hat{p}}$.
+%\end{lemma}
+%
+%  \begin{theorem}
+%      Given a small cache storing up to $\Delta$ keys, the I/O communication can be reduced to $O(C_t(i))$.
+%  \end{theorem}
+
+The caching technique is quite similar to the Sample-and-Hold algorithm in the work \cite{Estan2003}.
+The difference is that they drop the uncached data items, while LD-Sketch emits them to the workers
+so that no additional communication error will be introduced.
+The expected memory usage and the standard deviation of the efficient communication mechanism is $\hat{p}\hat{U}$ and $\sqrt{\hat{U}\hat{p}(1-\hat{p})}$,
+respectively.
+Here $\hat{U}$ is the total amount of data items in the epoch.
+The detailed analysis can be found in \cite{Estan2003}.
+
+In the context of network traffic, the mechanism can be further improved.
+Our implementation considers that most keys are short-term in practise.
+When a key in the cache is not updated for long time, it will be emitted and the entry in the cache will be released.
+
+%\subsection{Parameter Selection}
+%
+%In Section \ref{sec:local}, we give an approach to select $r, w$ and $T$ if $\phi, \epsilon$ and $\delta$ are given.
+%Now we propose an approach to determine $w$ when the memory size is fixed.
+%By Lemma \ref{lemma:bucket_length}, $O(r(w+\frac{U^2}{wT^2}))$

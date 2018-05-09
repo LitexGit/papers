@@ -1,0 +1,196 @@
+\section{Distributed Detection}
+\label{sec:distributed}
+
+In this section, we elaborate how we perform heavy key detection in a
+distributed architecture via LD-Sketch. 
+%Our primary goal is to provide both performance and accuracy guarantees for
+%our detection process.
+
+%We first consider two possible distributed schemes for LD-Sketch, and discuss
+%their limitations.  One reduces the complexity but compromises the accuracy
+%goal.  The other guarantees high accuracy as its local detection algorithm,
+%but introduces serious complexity problem in the distributed aperture.
+%
+%The first scheme is to monitor each local stream in the remote site
+%The detection can be done directly in the remote site,
+%or in one or more workers by forwarding the local streams to them,
+%or even in a hierarchy topology as \cite{Manjhi2005}.
+%This scheme offloads the workload of detecting the global stream into remote sites and workers
+%and reduces the space and time complexity in each remote site and worker.
+%
+%However, it fails to guarantee high detection accuracy.
+%This scheme implicitly assumes that the total value of a key is evenly distributed in the local streams.
+%If the distribution of a key is highly skewed, the scheme may cause a terrible error rate.
+%
+%{\bf Scheme 2.}
+%The second scheme is to maintain a sketch for the local stream.
+%The sketches will be merged into one for the global stream.
+%The detection are performed based on the global sketch.
+%Many variants exist with different deployment of the sketches in the remote sites and workers.
+%
+%There are two drawbacks in this scheme.
+%One is due to the local detection algorithm of LD-Sketch,
+%which contains a dictionary in each of its bucket.
+%However, to our best knowledge, it remains an open problem whether the dictionaries of a bucket in different local sketches can be merged.
+%The other drawback is more general for all sketch-based algorithms.
+%To merge the sketches, all of them must have identical size as the one for global stream.
+%As shown in Table \ref{tab:compare}, the size of global stream typically determined
+%by the total value, the approximation parameter and the error rate may be serious huge.
+%Moreover, the detection procedure on the merged sketch may overload the workers.
+%In summary, this scheme fails to optimize the complexity and compromises the resource constrains in the remote sites and workers.
+%
+%\subsection{Distributed Scheme in LD-Sketch}
+%\label{sec:distribute_ld}
+
+\subsection{Design}
+
+We design our distributed scheme as follows.  We deploy an LD-Sketch in
+each of the $q$ workers.  Then we partition the data stream in each of the $p$
+remote sites using a two-step approach.  First, for a data item $(x,v_x)$, a
+remote
+site hashes key $x$ to a set of $d$ ($1\le d\le q$) workers for some design
+parameter $d$.  This selection is deterministic in the sense that the same set
+of $d$ workers will always be selected for all data items with the same key
+$x$.  Second, the remote site uniformly selects one of the $d$ workers and
+forwards it the data item.  The partitioning functions in both steps are
+identical in all remote sites.  Since each of the $d$ workers receives on
+average $1/d$ of the total value for each key, we set the heavy key threshold
+to be $(1-\gamma)\frac{\phi}{d}$ for some approximation parameter 
+$0\le \gamma <1$.
+Finally, if a key is reported as a heavy key by all the $d$ workers, then we
+report the key as a heavy key in our final results.
+
+The design parameter $d$ in our distributed scheme determines the accuracy of
+heavy key detection.  
+%By increasing $d$, we divide the workload of updating data items of the same
+%key across multiple workers, thereby improving the performance of both update
+%and detection procedures.  For accuracy, 
+As $d$ increases, the false positive rate decreases until some turning point
+is reached.  We also introduce a small false negative rate, since some of the
+$d$ workers may receive less than $(1-\gamma)\frac{\phi}{d}$ of the total
+value if the partition is not perfectly even.  We study the impact of $d$ on
+the accuracy in the next subsection.
+
+\subsection{Analysis}
+\label{subsec:dist_analysis}
+
+%The complexity in the remote site is immediate.  A remote site simply invokes
+%a constant number of hash functions for each arriving data item.  So both the
+%time and space complexity in the remote sites is constant.
+
+%For the analysis of workers running detection module,
+%we assume that the random selection function and hash function are perfectly random.
+%With this assumption, the expectation of total value of the sum-stream received
+%by a worker is $\frac{U}{q}$.
+%Additionally, the threshold is each worker is set to $\frac{\phi}{d}$ as presented above.
+
+We conduct theoretical analysis on LD-Sketch in a distributed setting.  Our
+results are derived from those in Section~\ref{sec:local} by choosing new
+parameters for the distributed scheme.
+
+We first consider the space and time complexity. Suppose that each LD-Sketch
+has $r$ rows and $w$ buckets.  For the total sum $U$ and the threshold $\phi$
+in local detection, we replace them with $\frac{U}{q}$ and
+$(1-\gamma)\frac{\phi}{d}$, respectively.  We assume that the worker selection
+for each data item is independent.  By similar arguments in
+Lemma~\ref{lemma:bucket_length}, the expectation of the term $U^2$ in the
+space and time complexity can be replaced with $O(\frac{U^2}{q^2})$, assuming
+that $q$ is far smaller than the number of available keys $n$.  Using the
+above arguments, the space complexity is $O(r(w+\frac{U^2}{wT^2q^2}))$.  The
+time complexity of the update procedure is $O(r(1+\frac{U^2}{w^2T^2q^2}))$, and
+that of the detection procedure is $O(r(w+\frac{U^2}{wT^2q^2}))$.  We
+set $T=(1-\gamma)\frac{\phi}{d}$ for heavy hitter detection and
+$T=(1-\gamma)\frac{\epsilon\phi}{d}$ for heavy changer detection.  Since $1\le
+d \le q$ and $\gamma$ is typically small, we actually reduce both the space
+and time complexity of local detection.
+
+For the false positive rate, it can be derived from
+Lemmas~\ref{lemma:hitter_fp} and \ref{lemma:changer_fp} by replacing $U$ and
+$\phi$ with $\frac{U}{q}$ and $(1-\gamma)\frac{\phi}{d}$, respectively.
+Note that the distributed scheme further reduces the false positive rate
+since a non-heavy key needs to be reported by all $d$ workers.  Thus, the
+corresponding false positive rate is at most 
+$(\frac{dU}{qw(1-\gamma)\phi})^{rd}$ for heavy hitter detection and at most
+$(\frac{2dU}{qw(1-\gamma)\epsilon\phi})^{rd}$ for heavy changer detection.  
+
+We illustrate how the false positive rate varies with different values of $d$. 
+As a case study, we pick $\phi=0.001U$, so there are at most $H=\frac{U}{\phi}
+= 1000$ heavy hitters and $H=\frac{2U}{\phi} = 2000$ heavy changers (see
+Section~\ref{subsec:heavy}).  We fix $\gamma=0$, $\epsilon=0.5$, $r=5$, and 
+$w = 4500$.  Figures~\ref{fig:vary_d}(a) and \ref{fig:vary_d}(b) show the
+upper bounds of the false positive rate for heavy hitter and heavy changer
+detection, respectively.  Note that the upper bound of the false positive rate
+can be viewed as the function $(cd)^{rd}$, for some constant $c$.  As $d$
+increases, if $\log(cd) < -1$, the upper bound of the false positive rate
+decreases; if $\log(cd) > -1$, the upper bound increases exponentially, as
+shown in Figure~\ref{fig:vary_d}(b). 
+
+\begin{figure}[!t]
+\centering
+\begin{tabular}{c@{\ }c}
+\includegraphics[width=1.6in]{figs/dist/var_d/hitter_fp.eps} &
+\includegraphics[width=1.6in]{figs/dist/var_d/changer_fp.eps} \\
+{\small (a) Heavy Hitter} &
+{\small (b) Heavy Changer} \\
+\end{tabular}
+\caption{False positive rate of distributed scheme versus $d$.}
+\label{fig:vary_d}
+\end{figure}
+
+
+For the false negative rate, Lemma~\ref{lemma:dist_fn} shows that it can be
+bounded in a distributed setting.
+\begin{lemma}
+For a heavy key $x$, it will be missed at probability at most $1-(1-e^{-\frac{\phi}{2d}\gamma^2})^d$.
+\label{lemma:dist_fn}
+\end{lemma}
+\begin{proof}
+Let $X$ be the random variable of the sum of values of the heavy key $x$
+received by a worker. We first consider heavy hitter detection.  Note that
+$E(X) = \frac{S(x)}{d} \ge \frac{\phi}{d}$.  By Chernoff bound, $Pr\{X <
+(1-\gamma)\frac{\phi}{d}\} <
+e^{-\frac{E(X)}{2}(1-(1-\gamma)\frac{d\phi}{E(X)})^2} \le
+e^{-\frac{\phi}{2d}\gamma^2}$.  This is also the probability of missing the
+key in a single worker.  Thus, the probability of missing the key in at least
+one worker is at most $1-(1-e^{-\frac{\phi}{2d}\gamma^2})^d$.
+
+For heavy changer detection, we denote $X$ as the difference of the heavy key 
+$x$.  Since $E(X) \ge \frac{\phi}{d}$.  We can apply the same results as
+above.  
+\end{proof}
+
+Finally, we propose the parameter selection for the distributed scheme.
+The selection involves $H$, $\phi$, $\epsilon$, $\delta$, and $\gamma$ as
+inputs.  For heavy hitter detection, LD-Sketch selects
+$w=\frac{2dH}{(1-\gamma)q}$, $r=\log{\frac{1}{d\delta}}$, and
+$T=\frac{(1-\gamma)\phi}{d}$; for heavy changer detection, it selects
+$w=\frac{2dH}{(1-\gamma)q\epsilon}$, $r=\log{\frac{1}{d\delta}}$, and
+$T=\frac{(1-\gamma)\epsilon\phi}{d}$.  With the selected parameters, the
+following theorems summarize the error bounds, space complexity, and time
+complexity of the distributed scheme of LD-Sketch.
+%
+\begin{theorem}
+Consider an LD-Sketch with $w=\frac{2dH}{(1-\gamma)q}$,
+$r=\log{\frac{1}{d\delta}}$, and $T=\frac{(1-\gamma)\phi}{d}$.
+A heavy hitter is missed with probability at most
+$1-(1-e^{-\frac{\phi}{2d}\gamma^2})^d$, while a non-heavy hitter with the true
+sum less than $(1-\gamma)\phi$ is reported with probability at most $\delta$.
+The expected space complexity is
+$O(\frac{dH}{q(1-\gamma)}\log{\frac{1}{d\delta}})$.
+The expected time complexity of updating a data item is
+$O(\log{\frac{1}{d\delta}})$, and that of detection is
+$O(\frac{dH}{q(1-\gamma)}\log{\frac{1}{d\delta}})$.
+\end{theorem}
+
+\begin{theorem}
+Consider two LD-Sketches with $w=\frac{2dH}{(1-\gamma)q\epsilon}$,
+$r=\log{\frac{1}{d\delta}}$, and $T=\frac{(1-\gamma)\epsilon\phi}{d}$.
+A heavy changer is missed with probability at most
+$1-(1-e^{-\frac{\phi}{2d}\gamma^2})^d$, while a non-heavy changer with the true
+difference less than $(1-\gamma)(1-\epsilon)\phi$ is reported with probability
+at most $\delta$.  The expected space complexity is
+$O(\frac{dH}{q(1-\gamma)\epsilon}\log{\frac{1}{d\delta}})$.
+The expected time complexity of updating a data item is
+$\log{\frac{1}{d\delta}}$, and that of detection is
+$O(\frac{dH}{q(1-\gamma)\epsilon}\log{\frac{1}{d\delta}})$.
+\end{theorem}

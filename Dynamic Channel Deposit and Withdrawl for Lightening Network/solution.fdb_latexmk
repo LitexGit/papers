@@ -1,0 +1,18 @@
+# Fdb version 3
+["xdvipdfmx"] 0 "solution.xdv" "solution.pdf" "solution" 0
+  "solution.xdv" 0 -1 0 "xelatex"
+  (generated)
+  "solution.pdf"
+["xelatex"] 1525870711 "solution.tex" "solution.xdv" "solution" 1525870712
+  "/usr/local/texlive/2018/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
+  "/usr/local/texlive/2018/texmf-dist/fonts/tfm/public/lm/lmsy10.tfm" 1480098712 1308 02cc510f9dd6012e5815d0c0ffbf6869 ""
+  "/usr/local/texlive/2018/texmf-dist/tex/latex/lm/omslmr.fd" 1480098833 1013 f8133048bddeed1bf1041c9d830a3723 ""
+  "/usr/local/texlive/2018/texmf-dist/tex/latex/lm/omslmsy.fd" 1480098833 805 af340a8260c447aa315cfc740ff0152f ""
+  "/usr/local/texlive/2018/texmf-dist/web2c/texmf.cnf" 1522066949 33362 cf75436e19743e94a92a6b1b9183c434 ""
+  "/usr/local/texlive/2018/texmf-var/web2c/xetex/xelatex.fmt" 1523934532 3731946 97a69080a287fbc922a3cd699c6fd124 ""
+  "/usr/local/texlive/2018/texmf.cnf" 1523934483 577 0b39adfd7c93507ff20c9c14c2f1a33f ""
+  "solution.aux" 1525861784 8 a94a2480d3289e625eea47cd1b285758 ""
+  "solution.tex" 1525870710 7894 82a71307bef43540cca32ddf514a6750 ""
+  (generated)
+  "solution.log"
+  "solution.xdv"

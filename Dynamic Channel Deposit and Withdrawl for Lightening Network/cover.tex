@@ -1,0 +1,65 @@
+%\documentclass[journal]{IEEEtran}
+\documentclass[a4paper, 12pt]{article}
+
+%% INFOCOM addition:
+\makeatletter
+\def\ps@headings{%
+\def\@oddhead{\mbox{}\scriptsize\rightmark \hfil \thepage}%
+\def\@evenhead{\scriptsize\thepage \hfil \leftmark\mbox{}}%
+\def\@oddfoot{}%
+\def\@evenfoot{}}
+\makeatother
+\pagestyle{headings}
+
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{color}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{cite}
+\usepackage{amsthm}
+\usepackage{bm}
+\usepackage{threeparttable}
+\usepackage{geometry}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+
+\begin{document}
+
+%----------------------------------------------------------------------------
+\title{\huge Cover Letter}
+\date{}
+
+%\author{Qun Huang and Patrick P. C. Lee\\
+%The Chinese University of Hong Kong\\
+%\{qhuang,pclee\}@cse.cuhk.edu.hk}
+
+\maketitle
+
+%\thispagestyle{empty}
+
+%----------------------------------------------------------------------------
+
+Last year, we presented SAND, a distributed stream processing system for network traffic.
+This year, we dedicate to propose stream algorithms atop SAND.
+This report includes LD-Sketch, an algorithm for real-time detecting two typical anomalies in network traffic.
+Besides, we are still working on another algorithm for traffic classification, which is not included because it is not completed yet.
+In our future work, we hope to use these algorithms to motivate the design of our underlying design of the system.
+
+%This work was supported by (i) GRF CUHK413711 from the Research Grant
+%Council of Hong Kong and (ii) TH127485 from Huawei Technologies. 
+
+%----------------------------------------------------------------------------
+%\bibliographystyle{abbrv}
+%\bibliography{paper}
+
+\end{document}
