@@ -3,7 +3,7 @@
 
 LN allows two counterparties to agree on an off-chain allocation of arbitrary amount of funds. It ensures the off-chain security with the RSMC and HTLC mechanisms.
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=3.5in]{figs/rsmc_old.pdf}
 \vspace{-12pt}
@@ -14,7 +14,7 @@ LN allows two counterparties to agree on an off-chain allocation of arbitrary am
 
 Figure~\ref{fig:RSMC} reviews the RSMC mechanism. RSMC generates a pair of Commitment Transactions, each of which is held by one's counterparty. By broadcasting the Commitment Transaction, a counterparty has the ability to close the channel by spending the Funding Transaction. Accordingly, funds within channel are returned to both counterparties based on their latest agreement. To prevent old Commitment Transaction from being broadcast, RSMC places a LockTime on the funds of the counterparty who broadcasts. At the same time, it also enforces the exchange of private keys between two counterparties for old Commitment Transactions. If either party discovers that an old Commitment Transaction (e.g., C1a in Figure~\ref{fig:RSMC}) is broadcast, he/she can broadcast a penalty transaction (BR1a) with previously exchanged private keys to acquire all funds in the channel. Ensured by this mechanism, no one has the incentive to broadcast old Commitment Transactions.
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=3.5in]{figs/htlc_old.pdf}
 \vspace{-12pt}

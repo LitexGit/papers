@@ -140,8 +140,6 @@ INPUT figs/splice_out.pdf
 INPUT figs/channel_change.pdf
 INPUT evaluation.tex
 INPUT evaluation.tex
-INPUT conclusion.tex
-INPUT conclusion.tex
 INPUT paper.bbl
 INPUT paper.bbl
 INPUT paper.aux

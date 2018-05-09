@@ -8,7 +8,7 @@ withdrawl. Original Lightning Network assumes that the total funds in a channel
 are throughout the channel's lifetime. Thus, there is no need to broadcast any
 in-channel transactions.
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=4in]{figs/fake.pdf}
 \vspace{-6pt}
@@ -16,7 +16,7 @@ in-channel transactions.
 \label{fig:fake}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=4in]{figs/fund.pdf}
 \vspace{-6pt}
@@ -42,7 +42,7 @@ We now propose two separate approaches to support dynamic channel
 deposit (i.e., splice-in) and withdrawl (i.e., splice-out). The two approaches are
 differed by the layout of Funding Transactions, and we will elaborate both approaches as follows.
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=6in]{figs/rsmc_new.pdf}
 \vspace{-6pt}
@@ -50,7 +50,7 @@ differed by the layout of Funding Transactions, and we will elaborate both appro
 \label{fig:rsmc_new}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=6in]{figs/htlc_new.pdf}
 \vspace{-6pt}
@@ -66,7 +66,7 @@ Transactions with arbitrary combinations of Funding Transactions as input.
 Figure~\ref{fig:rsmc_new} and~\ref{fig:htlc_new} show the details of channel
 deposit for RSMC and HTLC. FundPara demands the invalidation of {\em all} existing Commitment Transactions, while RSMC also invalidates old commitment transactions by exchanging private keys. Thus, numerous keys are exchanged when a channel has made a large amount of transactions, resulting in poor scalability.
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=4in]{figs/splice_in.pdf}
 \vspace{-6pt}
@@ -92,7 +92,7 @@ Specifically, the splice-in proceeds as follows:
 \item Broadcasting the new Funding Transaction
 \end{enumerate}
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=4in]{figs/splice_out.pdf}
 \vspace{-6pt}
@@ -105,7 +105,7 @@ The solution of splice-out is similar to that of splice-in. Figure~\ref{fig:spli
 other "vout" indicating the amount of funding withdrawn (0.4 BTCs). The remaining
 fundings result in two Commitment Transactions, which corresponds to the fundings of both counterparties within the channel (0.1 BTCs for Alice and 0.5 BTCs for Bob).
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=3in]{figs/channel_change.pdf}
 \vspace{-6pt}

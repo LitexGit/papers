@@ -1,16 +1,16 @@
 # Fdb version 3
-["bibtex paper"] 1525869843 "paper.aux" "paper.bbl" "paper" 1525870717
+["bibtex paper"] 1525872750 "paper.aux" "paper.bbl" "paper" 1525872751
   "/usr/local/texlive/2018/texmf-dist/bibtex/bst/base/abbrv.bst" 1480098433 20329 b5fed53e10044d0f8112183785c759b1 ""
-  "paper.aux" 1525870716 2521 fe77fdfc41a7b932999f0bb49f727efc ""
-  "paper.bib" 1525868766 1227 f269f45d01089b73b0e88b13b91608b6 ""
+  "paper.aux" 1525872750 2448 8c1ae8d74b7bbbf527c2baf3361e9bfe ""
+  "paper.bib" 1525872748 1423 ee1172e9e1938ba26f6a1e096ad0ada7 ""
   (generated)
   "paper.blg"
   "paper.bbl"
-["xdvipdfmx"] 1525870716 "paper.xdv" "paper.pdf" "paper" 1525870717
-  "paper.xdv" 1525870716 136568 56ad862b5e01636a15979b61dd4052b8 "xelatex"
+["xdvipdfmx"] 1525872750 "paper.xdv" "paper.pdf" "paper" 1525872751
+  "paper.xdv" 1525872750 138916 be9c0de9f4c821070538c98cff2d90a9 "xelatex"
   (generated)
   "paper.pdf"
-["xelatex"] 1525870716 "paper.tex" "paper.xdv" "paper" 1525870717
+["xelatex"] 1525872750 "paper.tex" "paper.xdv" "paper" 1525872751
   "/usr/local/texlive/2018/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/local/texlive/2018/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy5.tfm" 1480098698 1120 1e8878807317373affa7f7bba4cf2f6a ""
   "/usr/local/texlive/2018/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1480098698 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
@@ -84,9 +84,8 @@
   "/usr/local/texlive/2018/texmf-dist/web2c/texmf.cnf" 1522066949 33362 cf75436e19743e94a92a6b1b9183c434 ""
   "/usr/local/texlive/2018/texmf-var/web2c/xetex/xelatex.fmt" 1523934532 3731946 97a69080a287fbc922a3cd699c6fd124 ""
   "/usr/local/texlive/2018/texmf.cnf" 1523934483 577 0b39adfd7c93507ff20c9c14c2f1a33f ""
-  "background.tex" 1525869724 3904 b38cb0bd9927490a5c76b535f534415e ""
-  "conclusion.tex" 1525506778 48 bac758e515d91dd2dd98935142e0ffb2 ""
-  "evaluation.tex" 1525421053 41 b7a171fc0b914db944b82c2d603b9f58 ""
+  "background.tex" 1525871976 3904 2108451cd350ff278b452b0ed41c49b0 ""
+  "evaluation.tex" 1525872676 218 05aaef07b88908e58b1992dac779ce2f ""
   "figs/channel_change.pdf" 1525633925 31790 114ac3e15e377f5d1c639f7e1fbd19ab ""
   "figs/fake.pdf" 1525657494 22675 e24e2f46cb36554180c7749393b3d141 ""
   "figs/fund.pdf" 1525658183 23114 5c06f607a9d2e280a44e8e093f9d9360 ""
@@ -97,11 +96,11 @@
   "figs/splice_in.pdf" 1525656308 24465 f50ffe8191a1c4b8a1fcfcf271403f85 ""
   "figs/splice_out.pdf" 1525631913 52290 c39d5db133a2e110269d8a1c7b8e3d7f ""
   "intro.tex" 1525869794 2875 1d6220cc5910c4b8961b6184106b8565 ""
-  "paper.aux" 1525870716 2521 fe77fdfc41a7b932999f0bb49f727efc ""
-  "paper.bbl" 1525869843 649 d35ab7668c3f7983ecc1af83666238db "bibtex paper"
-  "paper.tex" 1525869796 1227 a42f261510f021918a600e5a40ce7aaf ""
-  "solution.tex" 1525870710 7894 82a71307bef43540cca32ddf514a6750 ""
+  "paper.aux" 1525872750 2448 8c1ae8d74b7bbbf527c2baf3361e9bfe ""
+  "paper.bbl" 1525872750 732 75a0b48e3046805d3328c9cc85c98a37 "bibtex paper"
+  "paper.tex" 1525871940 1248 16f0fa12546e249487a47b5814ad3026 ""
+  "solution.tex" 1525871992 7894 bbb068681222e206e5bd11424c5ee5e3 ""
   (generated)
   "paper.aux"
-  "paper.log"
   "paper.xdv"
+  "paper.log"

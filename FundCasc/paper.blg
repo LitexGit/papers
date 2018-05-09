@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99d (TeX Live 2018)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: paper.aux
+The style file: abbrv.bst
+Database file #1: paper.bib
+Warning--entry type for "LND" isn't style-file defined
+--line 41 of file paper.bib
+Warning--empty journal in nakamoto2008bitcoin
+You've used 5 entries,
+            2118 wiz_defined-function locations,
+            523 strings with 4275 characters,
+and the built_in function-call counts, 1276 in all, are:
+= -- 113
+> -- 69
+< -- 0
++ -- 28
+- -- 22
+* -- 67
+:= -- 233
+add.period$ -- 14
+call.type$ -- 5
+change.case$ -- 26
+chr.to.int$ -- 0
+cite$ -- 6
+duplicate$ -- 51
+empty$ -- 102
+format.name$ -- 22
+if$ -- 257
+int.to.chr$ -- 0
+int.to.str$ -- 5
+missing$ -- 4
+newline$ -- 27
+num.names$ -- 10
+pop$ -- 35
+preamble$ -- 1
+purify$ -- 21
+quote$ -- 0
+skip$ -- 40
+stack$ -- 0
+substring$ -- 26
+swap$ -- 5
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 20
+warning$ -- 1
+while$ -- 10
+width$ -- 6
+write$ -- 50
+(There were 2 warnings)

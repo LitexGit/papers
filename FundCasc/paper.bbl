@@ -20,4 +20,8 @@ J.~Poon and T.~Dryja.
 \newblock The bitcoin lightning network.
 \newblock {\em cit. on}, 2015.
 
+\bibitem{LND}
+J.~Poon and O.~Osuntokun.
+\newblock Lightning network daemon, 2018.
+
 \end{thebibliography}
