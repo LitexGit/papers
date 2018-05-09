@@ -1,16 +1,16 @@
 # Fdb version 3
-["bibtex paper"] 1525872750 "paper.aux" "paper.bbl" "paper" 1525872751
+["bibtex paper"] 1525876282 "paper.aux" "paper.bbl" "paper" 1525876284
   "/usr/local/texlive/2018/texmf-dist/bibtex/bst/base/abbrv.bst" 1480098433 20329 b5fed53e10044d0f8112183785c759b1 ""
-  "paper.aux" 1525872750 2448 8c1ae8d74b7bbbf527c2baf3361e9bfe ""
-  "paper.bib" 1525872748 1423 ee1172e9e1938ba26f6a1e096ad0ada7 ""
+  "paper.aux" 1525876283 2448 ed37136f508be75e3709389baf3dffc2 ""
+  "paper.bib" 1525876167 1423 ee1172e9e1938ba26f6a1e096ad0ada7 ""
   (generated)
   "paper.blg"
   "paper.bbl"
-["xdvipdfmx"] 1525872750 "paper.xdv" "paper.pdf" "paper" 1525872751
-  "paper.xdv" 1525872750 138916 be9c0de9f4c821070538c98cff2d90a9 "xelatex"
+["xdvipdfmx"] 1525876283 "paper.xdv" "paper.pdf" "paper" 1525876284
+  "paper.xdv" 1525876283 138800 f11df9dc8d4acac73dad9fd30e7c4eb0 "xelatex"
   (generated)
   "paper.pdf"
-["xelatex"] 1525872750 "paper.tex" "paper.xdv" "paper" 1525872751
+["xelatex"] 1525876283 "paper.tex" "paper.xdv" "paper" 1525876284
   "/usr/local/texlive/2018/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/local/texlive/2018/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy5.tfm" 1480098698 1120 1e8878807317373affa7f7bba4cf2f6a ""
   "/usr/local/texlive/2018/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1480098698 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
@@ -84,23 +84,23 @@
   "/usr/local/texlive/2018/texmf-dist/web2c/texmf.cnf" 1522066949 33362 cf75436e19743e94a92a6b1b9183c434 ""
   "/usr/local/texlive/2018/texmf-var/web2c/xetex/xelatex.fmt" 1523934532 3731946 97a69080a287fbc922a3cd699c6fd124 ""
   "/usr/local/texlive/2018/texmf.cnf" 1523934483 577 0b39adfd7c93507ff20c9c14c2f1a33f ""
-  "background.tex" 1525871976 3904 2108451cd350ff278b452b0ed41c49b0 ""
-  "evaluation.tex" 1525872676 218 05aaef07b88908e58b1992dac779ce2f ""
-  "figs/channel_change.pdf" 1525633925 31790 114ac3e15e377f5d1c639f7e1fbd19ab ""
-  "figs/fake.pdf" 1525657494 22675 e24e2f46cb36554180c7749393b3d141 ""
-  "figs/fund.pdf" 1525658183 23114 5c06f607a9d2e280a44e8e093f9d9360 ""
-  "figs/htlc_new.pdf" 1525796331 89771 960e10c4f530032e6d66e46dc654153c ""
-  "figs/htlc_old.pdf" 1525796299 79697 73d876ee956bd2ab859195d6f15abb3e ""
-  "figs/rsmc_new.pdf" 1525796256 75753 28759bc685dda94c691b78c1094d1395 ""
-  "figs/rsmc_old.pdf" 1525796173 72373 d24d877354c6def56039bdfe3ee3fb9d ""
-  "figs/splice_in.pdf" 1525656308 24465 f50ffe8191a1c4b8a1fcfcf271403f85 ""
-  "figs/splice_out.pdf" 1525631913 52290 c39d5db133a2e110269d8a1c7b8e3d7f ""
-  "intro.tex" 1525869794 2875 1d6220cc5910c4b8961b6184106b8565 ""
-  "paper.aux" 1525872750 2448 8c1ae8d74b7bbbf527c2baf3361e9bfe ""
-  "paper.bbl" 1525872750 732 75a0b48e3046805d3328c9cc85c98a37 "bibtex paper"
-  "paper.tex" 1525871940 1248 16f0fa12546e249487a47b5814ad3026 ""
-  "solution.tex" 1525871992 7894 bbb068681222e206e5bd11424c5ee5e3 ""
+  "background.tex" 1525876167 3904 2108451cd350ff278b452b0ed41c49b0 ""
+  "evaluation.tex" 1525876167 218 05aaef07b88908e58b1992dac779ce2f ""
+  "figs/channel_change.pdf" 1525876167 31790 114ac3e15e377f5d1c639f7e1fbd19ab ""
+  "figs/fake.pdf" 1525876167 22675 e24e2f46cb36554180c7749393b3d141 ""
+  "figs/fund.pdf" 1525876167 23114 5c06f607a9d2e280a44e8e093f9d9360 ""
+  "figs/htlc_new.pdf" 1525876167 89771 960e10c4f530032e6d66e46dc654153c ""
+  "figs/htlc_old.pdf" 1525876167 79697 73d876ee956bd2ab859195d6f15abb3e ""
+  "figs/rsmc_new.pdf" 1525876167 75753 28759bc685dda94c691b78c1094d1395 ""
+  "figs/rsmc_old.pdf" 1525876167 72373 d24d877354c6def56039bdfe3ee3fb9d ""
+  "figs/splice_in.pdf" 1525876167 24465 f50ffe8191a1c4b8a1fcfcf271403f85 ""
+  "figs/splice_out.pdf" 1525876167 52290 c39d5db133a2e110269d8a1c7b8e3d7f ""
+  "intro.tex" 1525876247 2874 8eb7c82f9e691111847c5bf977795750 ""
+  "paper.aux" 1525876283 2448 ed37136f508be75e3709389baf3dffc2 ""
+  "paper.bbl" 1525876283 732 75a0b48e3046805d3328c9cc85c98a37 "bibtex paper"
+  "paper.tex" 1525876236 1243 a1e223adabe6d30453ceb0869d2c2875 ""
+  "solution.tex" 1525876280 7894 eb6a6be27c4227396c84860f2d89fafc ""
   (generated)
-  "paper.aux"
   "paper.xdv"
   "paper.log"
+  "paper.aux"
